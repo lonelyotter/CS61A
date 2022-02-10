@@ -1,15 +1,19 @@
 from operator import add, mul, sub
 
-square = lambda x: x * x
 
-identity = lambda x: x
-
-triple = lambda x: 3 * x
-
-increment = lambda x: x + 1
+def square(x): return x * x
 
 
-HW_SOURCE_FILE=__file__
+def identity(x): return x
+
+
+def triple(x): return 3 * x
+
+
+def increment(x): return x + 1
+
+
+HW_SOURCE_FILE = __file__
 
 
 def product(n, term):
@@ -31,6 +35,13 @@ def product(n, term):
     162
     """
     "*** YOUR CODE HERE ***"
+    i = 1
+    result = 1
+    while i <= n:
+        result *= term(i)
+        i += 1
+
+    return result
 
 
 def accumulate(combiner, base, n, term):
@@ -56,6 +67,14 @@ def accumulate(combiner, base, n, term):
     16
     """
     "*** YOUR CODE HERE ***"
+    i = 1
+    result = base
+    while i <= n:
+        result = combiner(result, term(i))
+        i += 1
+
+    return result
+
 
 def summation_using_accumulate(n, term):
     """Returns the sum of term(1) + ... + term(n). The implementation
@@ -72,6 +91,8 @@ def summation_using_accumulate(n, term):
     True
     """
     "*** YOUR CODE HERE ***"
+    return accumulate(add, 0, n, term)
+
 
 def product_using_accumulate(n, term):
     """An implementation of product using accumulate.
@@ -87,6 +108,7 @@ def product_using_accumulate(n, term):
     True
     """
     "*** YOUR CODE HERE ***"
+    return accumulate(mul, 1, n, term)
 
 
 def compose1(func1, func2):
@@ -94,6 +116,8 @@ def compose1(func1, func2):
     def f(x):
         return func1(func2(x))
     return f
+
+
 def make_repeater(func, n):
     """Return the function that computes the nth application of func.
 
@@ -110,23 +134,31 @@ def make_repeater(func, n):
     5
     """
     "*** YOUR CODE HERE ***"
+    return accumulate(compose1, identity, n, lambda x: func)
 
 
 def zero(f):
     return lambda x: x
 
+
 def successor(n):
     return lambda f: lambda x: f(n(f)(x))
+
 
 def one(f):
     """Church numeral 1: same as successor(zero)"""
     "*** YOUR CODE HERE ***"
+    return lambda x: f(x)
+
 
 def two(f):
     """Church numeral 2: same as successor(successor(zero))"""
     "*** YOUR CODE HERE ***"
+    return lambda x: f(f(x))
+
 
 three = successor(two)
+
 
 def church_to_int(n):
     """Convert the Church numeral n to a Python integer.
@@ -141,6 +173,11 @@ def church_to_int(n):
     3
     """
     "*** YOUR CODE HERE ***"
+    def inc(x):
+        return x + 1
+
+    return n(inc)(0)
+
 
 def add_church(m, n):
     """Return the Church numeral for m + n, for Church numerals m and n.
@@ -149,6 +186,13 @@ def add_church(m, n):
     5
     """
     "*** YOUR CODE HERE ***"
+    int_n = church_to_int(n)
+
+    for i in range(int_n):
+        m = successor(m)
+
+    return m
+
 
 def mul_church(m, n):
     """Return the Church numeral for m * n, for Church numerals m and n.
@@ -160,6 +204,14 @@ def mul_church(m, n):
     12
     """
     "*** YOUR CODE HERE ***"
+    ans = zero
+    int_n = church_to_int(n)
+
+    for i in range(int_n):
+        ans = add_church(ans, m)
+
+    return ans
+
 
 def pow_church(m, n):
     """Return the Church numeral m ** n, for Church numerals m and n.
@@ -170,4 +222,10 @@ def pow_church(m, n):
     9
     """
     "*** YOUR CODE HERE ***"
+    ans = one
+    int_n = church_to_int(n)
 
+    for i in range(int_n):
+        ans = mul_church(ans, m)
+
+    return ans
