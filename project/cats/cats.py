@@ -98,6 +98,15 @@ def autocorrect(user_word, valid_words, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if user_word in valid_words:
+        return user_word
+    else:
+        closest_word = min(valid_words, key=lambda valid_word: diff_function(
+            user_word, valid_word, limit))
+        if diff_function(user_word, closest_word, limit) > limit:
+            return user_word
+        else:
+            return closest_word
     # END PROBLEM 5
 
 
@@ -107,30 +116,45 @@ def shifty_shifts(start, goal, limit):
     their lengths.
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    if len(start) == 0 or len(goal) == 0:
+        return len(start) + len(goal)
+
+    else:
+        if start[0] == goal[0]:
+            return shifty_shifts(start[1:], goal[1:], limit)
+        else:
+            if limit == 0:
+                return 1
+            return 1 + shifty_shifts(start[1:], goal[1:], limit - 1)
     # END PROBLEM 6
 
 
 def meowstake_matches(start, goal, limit):
     """A diff function that computes the edit distance from START to GOAL."""
-    assert False, 'Remove this line'
 
-    if ______________:  # Fill in the condition
+    if limit < 0:  # Fill in the condition
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return 0
         # END
 
-    elif ___________:  # Feel free to remove or add additional cases
+    elif len(start) == 0 or len(goal) == 0:  # Feel free to remove or add additional cases
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return len(start) + len(goal)
         # END
+
+    elif start[0] == goal[0]:
+        return meowstake_matches(start[1:], goal[1:], limit)
 
     else:
-        add_diff = ...  # Fill in these lines
-        remove_diff = ...
-        substitute_diff = ...
+        add_diff = meowstake_matches(
+            start, goal[1:], limit - 1)  # Fill in these lines
+        remove_diff = meowstake_matches(start[1:], goal, limit - 1)
+        substitute_diff = meowstake_matches(start[1:], goal[1:], limit - 1)
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return 1 + min(add_diff, remove_diff, substitute_diff)
         # END
 
 
