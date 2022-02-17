@@ -305,6 +305,31 @@ def key_distance_diff(start, goal, limit):
 
     # BEGIN PROBLEM EC1
     "*** YOUR CODE HERE ***"
+    if limit < 0:  # Fill in the condition
+        # BEGIN
+        "*** YOUR CODE HERE ***"
+        return inf
+        # END
+
+    elif len(start) == 0 or len(goal) == 0:  # Feel free to remove or add additional cases
+        # BEGIN
+        "*** YOUR CODE HERE ***"
+        return len(start) + len(goal)
+        # END
+
+    elif start[0] == goal[0]:
+        return key_distance_diff(start[1:], goal[1:], limit)
+
+    else:
+        add_diff = 1 + key_distance_diff(
+            start, goal[1:], limit - 1)  # Fill in these lines
+        remove_diff = 1 + key_distance_diff(start[1:], goal, limit - 1)
+        substitute_diff = key_distance[(start[0], goal[0])] + \
+            key_distance_diff(start[1:], goal[1:], limit - 1)
+        # BEGIN
+        "*** YOUR CODE HERE ***"
+        return min(add_diff, remove_diff, substitute_diff)
+        # END
     # END PROBLEM EC1
 
 
