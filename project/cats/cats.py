@@ -1,5 +1,6 @@
 """Typing test implementation"""
 
+from math import inf
 from utils import *
 from ucb import main, interact, trace
 from datetime import datetime
@@ -172,6 +173,16 @@ def report_progress(typed, prompt, id, send):
     """Send a report of your id and progress so far to the multiplayer server."""
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    correct_number = 0
+    for i in range(len(typed)):
+        if typed[i] == prompt[i]:
+            correct_number += 1
+        else:
+            break
+
+    correct_ratio = correct_number / len(prompt)
+    send({'id': id, 'progress': correct_ratio})
+    return correct_ratio
     # END PROBLEM 8
 
 
@@ -198,6 +209,13 @@ def time_per_word(times_per_player, words):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    times = []
+    for timestamps in times_per_player:
+        time = []
+        for i in range(1, len(timestamps)):
+            time.append(timestamps[i] - timestamps[i - 1])
+        times.append(time)
+    return game(words, times)
     # END PROBLEM 9
 
 
@@ -213,6 +231,18 @@ def fastest_words(game):
     words = range(len(all_words(game)))    # An index for each word
     # BEGIN PROBLEM 10
     "*** YOUR CODE HERE ***"
+    lists = []
+    for i in players:
+        lists.append([])
+    for word_index in words:
+        min_time = inf
+        for player_index in players:
+            if time(game, player_index, word_index) < min_time:
+                min_time = time(game, player_index, word_index)
+                min_player = player_index
+        lists[min_player].append(word_at(game, word_index))
+
+    return lists
     # END PROBLEM 10
 
 
@@ -257,7 +287,7 @@ def game_string(game):
     return "game(%s, %s)" % (game[0], game[1])
 
 
-enable_multiplayer = False  # Change to True when you
+enable_multiplayer = True  # Change to True when you
 
 ##########################
 # Extra Credit #
@@ -341,7 +371,7 @@ def run_typing_test(topics):
         i += 1
 
 
-@main
+@ main
 def run(*args):
     """Read in the command-line argument and calls corresponding functions."""
     import argparse
