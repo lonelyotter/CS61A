@@ -53,6 +53,7 @@ class Insect:
     damage = 0
 
     # ADD CLASS ATTRIBUTES HERE
+    is_watersafe = False
 
     def __init__(self, armor, place=None):
         """Create an Insect with an ARMOR amount and a starting PLACE."""
@@ -107,6 +108,7 @@ class Ant(Insect):
 
     # ADD CLASS ATTRIBUTES HERE
     blocks_path = True
+    is_doubled = False
 
     def __init__(self, armor=1):
         """Create an Ant with an ARMOR quantity."""
@@ -451,30 +453,44 @@ class Water(Place):
         its armor to 0."""
         # BEGIN Problem 11
         "*** YOUR CODE HERE ***"
+        super().add_insect(insect)
+        if insect.is_watersafe == False:
+            insect.reduce_armor(insect.armor)
         # END Problem 11
 
 
 # BEGIN Problem 12
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    name = 'Scuba'
+    is_watersafe = True
+    food_cost = 6
+    implemented = True
+
+
 # END Problem 12
 
 
 # BEGIN Problem 13
-class QueenAnt(Ant):  # You should change this line
+class QueenAnt(ScubaThrower):  # You should change this line
     # END Problem 13
     """The Queen of the colony. The game is over if a bee enters her place."""
 
     name = 'Queen'
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
+    exist_queen = None
     # BEGIN Problem 13
-    implemented = False  # Change to True to view in the GUI
+    implemented = True  # Change to True to view in the GUI
 
     # END Problem 13
 
     def __init__(self, armor=1):
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+        if QueenAnt.exist_queen == None:
+            QueenAnt.exist_queen = self
+        super().__init__(armor)
         # END Problem 13
 
     def action(self, gamestate):
@@ -485,6 +501,24 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+
+        def double_damage(ant):
+            if ant.is_doubled == False:
+                ant.damage *= 2
+                ant.is_doubled = True
+
+        if QueenAnt.exist_queen is not self:
+            self.reduce_armor(self.armor)
+        else:
+            super().action(gamestate)
+            p = self.place.exit
+            while p != None:
+                if p.ant != None:
+                    double_damage(p.ant)
+                    if isinstance(p.ant, ContainerAnt):
+                        if p.ant.contained_ant != None:
+                            double_damage(p.ant.contained_ant)
+                p = p.exit
         # END Problem 13
 
     def reduce_armor(self, amount):
@@ -493,7 +527,16 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+        super().reduce_armor(amount)
+        if self is QueenAnt.exist_queen and self.armor <= 0:
+            bees_win()
         # END Problem 13
+
+    def remove_from(self, place):
+        if self is QueenAnt.exist_queen:
+            return
+        else:
+            super().remove_from(place)
 
 
 class AntRemover(Ant):
@@ -513,6 +556,7 @@ class Bee(Insect):
     damage = 1
 
     # OVERRIDE CLASS ATTRIBUTES HERE
+    is_watersafe = True
 
     def sting(self, ant):
         """Attack an ANT, reducing its armor by 1."""
