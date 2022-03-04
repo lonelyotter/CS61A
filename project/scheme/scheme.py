@@ -631,10 +631,10 @@ def do_mu_form(expressions, env):
     validate_form(expressions, 2)
     formals = expressions.first
     validate_formals(formals)
-    # BEGIN PROBLEM 18
+    # BEGIN PROBLEM 15
     "*** YOUR CODE HERE ***"
     return MuProcedure(formals, expressions.rest)
-    # END PROBLEM 18
+    # END PROBLEM 15
 
 
 SPECIAL_FORMS['mu'] = do_mu_form
