@@ -382,6 +382,15 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return True
+    p = expressions
+    while p is not nil:
+        val = scheme_eval(p.first, env)
+        if is_false_primitive(val):
+            return False
+        p = p.rest
+    return val
     # END PROBLEM 12
 
 
@@ -400,6 +409,15 @@ def do_or_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return False
+    p = expressions
+    while p is not nil:
+        value = scheme_eval(p.first, env)
+        if is_true_primitive(value):
+            return value
+        p = p.rest
+    return False
     # END PROBLEM 12
 
 
@@ -421,6 +439,10 @@ def do_cond_form(expressions, env):
         if is_true_primitive(test):
             # BEGIN PROBLEM 13
             "*** YOUR CODE HERE ***"
+            if clause.rest is nil:
+                return test
+            else:
+                return eval_all(clause.rest, env)
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -447,6 +469,14 @@ def make_let_frame(bindings, env):
     names, values = nil, nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
+    while bindings is not nil:
+        binding = bindings.first
+        validate_form(binding, 2, 2)
+        names, values = Pair(binding.first,
+                             names), Pair(scheme_eval(binding.rest.first, env),
+                                          values)
+        bindings = bindings.rest
+    validate_formals(names)
     # END PROBLEM 14
     return env.make_child_frame(names, values)
 
@@ -581,6 +611,11 @@ class MuProcedure(Procedure):
     # BEGIN PROBLEM 15
     "*** YOUR CODE HERE ***"
 
+    def make_call_frame(self, args, env):
+        """Make a frame that binds my formal parameters to ARGS, a Scheme list
+        of values, for a dynamically-scoped call evaluated in my parent environment."""
+        return env.make_child_frame(self.formals, args)
+
     # END PROBLEM 15
 
     def __str__(self):
@@ -598,6 +633,7 @@ def do_mu_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 18
     "*** YOUR CODE HERE ***"
+    return MuProcedure(formals, expressions.rest)
     # END PROBLEM 18
 
 
